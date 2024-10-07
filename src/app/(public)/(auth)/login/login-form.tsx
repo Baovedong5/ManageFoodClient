@@ -26,7 +26,16 @@ import { LoginBody, LoginBodyType } from "@/app/schemaValidations/auth.schema";
 //icon
 import { ChevronLeft } from "lucide-react";
 
+//query
+import { useLoginMutation } from "@/queries/useAuth";
+
+//hook
+import { toast } from "@/hooks/use-toast";
+import { handleErrorApi } from "@/lib/utils";
+
 const LoginForm = () => {
+  const loginMutation = useLoginMutation();
+
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -34,6 +43,22 @@ const LoginForm = () => {
       password: "",
     },
   });
+
+  const onSubmit = async (data: LoginBodyType) => {
+    if (loginMutation.isPending) return;
+
+    try {
+      const result = await loginMutation.mutateAsync(data);
+      toast({
+        description: "Đăng nhập thành công",
+      });
+    } catch (error: any) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
+    }
+  };
 
   return (
     <div className="flex items-center justify-center h-[550px] ">
@@ -51,6 +76,9 @@ const LoginForm = () => {
           <Form {...form}>
             <form
               className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
+              onSubmit={form.handleSubmit(onSubmit, (err) => {
+                console.log(err);
+              })}
               noValidate
             >
               <div className="grid gap-4">

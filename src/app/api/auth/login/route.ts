@@ -8,6 +8,7 @@ export async function POST(request: Request) {
   const body = (await request.json()) as LoginBodyType;
 
   const cookieStore = cookies();
+
   try {
     const { payload } = await authRequest.sLogin(body);
     const { access_token, refresh_token } = payload.data;

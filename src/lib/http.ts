@@ -25,19 +25,29 @@ export class HttpError extends Error {
     payload,
     message = "Lỗi HTTP",
   }: {
+    status: number;
     payload: any;
     message?: string;
   }) {
     super(message);
+
     this.payload = payload;
   }
 }
 
 export class EntityError extends HttpError {
   payload: BadErrorPayload;
+  status: typeof BADREQUEST_ERROR_STATUS;
 
-  constructor({ payload }: { payload: BadErrorPayload }) {
-    super({ payload, message: "Lỗi validate" });
+  constructor({
+    payload,
+    status,
+  }: {
+    payload: BadErrorPayload;
+    status: typeof BADREQUEST_ERROR_STATUS;
+  }) {
+    super({ status, payload, message: "Lỗi validate" });
+    this.status = status;
     this.payload = payload;
   }
 }
@@ -122,8 +132,8 @@ const request = async <Response>(
             await clientLogoutRequest;
           } catch (error) {
           } finally {
-            localStorage.removeItem("accessToken");
-            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
             clientLogoutRequest = null;
             // Redirect về trang login có thể dẫn đến loop vô hạn
             // Nếu không không được xử lý đúng cách
@@ -136,7 +146,7 @@ const request = async <Response>(
         const accessToken = (options?.headers as any)?.Authorization.split(
           "Bearer "
         )[1];
-        redirect(`/logout?accessToken=${accessToken}`);
+        // redirect(`/logout?accessToken=${accessToken}`);
       }
     } else {
       throw new HttpError(data);
@@ -146,12 +156,12 @@ const request = async <Response>(
   if (isClient) {
     const normalizeUrl = normalizePath(url);
     if (normalizeUrl === "api/auth/login") {
-      const { accessToken, refreshToken } = (data as any).data;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      const { access_token, refresh_token } = (data as any).data;
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
     } else if (normalizeUrl === "api/auth/logout") {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
     }
   }
 
