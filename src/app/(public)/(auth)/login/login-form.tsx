@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 
 //schema
-import { LoginBody, LoginBodyType } from "@/app/schemaValidations/auth.schema";
+import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 
 //icon
 import { ChevronLeft } from "lucide-react";

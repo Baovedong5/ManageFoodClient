@@ -1,7 +1,4 @@
-import {
-  LoginBodyType,
-  LoginResType,
-} from "@/app/schemaValidations/auth.schema";
+import { LoginBodyType, LoginResType } from "@/schemaValidations/auth.schema";
 import http from "@/lib/http";
 
 const authRequest = {
