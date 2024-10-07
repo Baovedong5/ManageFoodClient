@@ -25,29 +25,19 @@ export class HttpError extends Error {
     payload,
     message = "Lỗi HTTP",
   }: {
-    status: number;
     payload: any;
     message?: string;
   }) {
     super(message);
-
     this.payload = payload;
   }
 }
 
 export class EntityError extends HttpError {
   payload: BadErrorPayload;
-  status: typeof BADREQUEST_ERROR_STATUS;
 
-  constructor({
-    payload,
-    status,
-  }: {
-    payload: BadErrorPayload;
-    status: typeof BADREQUEST_ERROR_STATUS;
-  }) {
-    super({ status, payload, message: "Lỗi validate" });
-    this.status = status;
+  constructor({ payload }: { payload: BadErrorPayload }) {
+    super({ payload, message: "Lỗi validate" });
     this.payload = payload;
   }
 }
@@ -146,7 +136,7 @@ const request = async <Response>(
         const accessToken = (options?.headers as any)?.Authorization.split(
           "Bearer "
         )[1];
-        // redirect(`/logout?accessToken=${accessToken}`);
+        redirect(`/logout?accessToken=${accessToken}`);
       }
     } else {
       throw new HttpError(data);
@@ -156,7 +146,7 @@ const request = async <Response>(
   if (isClient) {
     const normalizeUrl = normalizePath(url);
     if (normalizeUrl === "api/auth/login") {
-      const { access_token, refresh_token } = (data as any).data;
+      const { access_token, refresh_token } = (data as any).payload.data;
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
     } else if (normalizeUrl === "api/auth/logout") {

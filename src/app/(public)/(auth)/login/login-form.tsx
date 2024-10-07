@@ -39,8 +39,8 @@ const LoginForm = () => {
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
-      username: "",
-      password: "",
+      username: "admin@gmail.com",
+      password: "123123",
     },
   });
 
@@ -50,7 +50,7 @@ const LoginForm = () => {
     try {
       const result = await loginMutation.mutateAsync(data);
       toast({
-        description: "Đăng nhập thành công",
+        description: result.payload.message,
       });
     } catch (error: any) {
       handleErrorApi({
