@@ -7,6 +7,16 @@ const authRequest = {
     http.post<LoginResType>("/api/auth/login", body, {
       baseUrl: "",
     }),
+  sLogout: (access_token: string) =>
+    http.post("/auth/logout", null, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }),
+  logout: () =>
+    http.post("/api/auth/logout", null, {
+      baseUrl: "",
+    }),
 };
 
 export default authRequest;

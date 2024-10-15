@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
 import { normalizePath } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 type CustomOptions = Omit<RequestInit, "method"> & {
   baseUrl?: string | undefined;
@@ -15,30 +15,43 @@ type BadErrorPayload = {
 };
 
 export class HttpError extends Error {
+  status: number;
   payload: {
     message: string | string[];
     error: string;
     statusCode: number;
+    [key: string]: any;
   };
 
   constructor({
     payload,
+    status,
     message = "Lỗi HTTP",
   }: {
     payload: any;
+    status: number;
     message?: string;
   }) {
     super(message);
+    this.status = status;
     this.payload = payload;
   }
 }
 
 export class EntityError extends HttpError {
+  status: typeof BADREQUEST_ERROR_STATUS;
   payload: BadErrorPayload;
 
-  constructor({ payload }: { payload: BadErrorPayload }) {
-    super({ payload, message: "Lỗi validate" });
+  constructor({
+    payload,
+    status,
+  }: {
+    payload: BadErrorPayload;
+    status: typeof BADREQUEST_ERROR_STATUS;
+  }) {
+    super({ status, payload, message: "Lỗi validate" });
     this.payload = payload;
+    this.status = status;
   }
 }
 
@@ -95,6 +108,7 @@ const request = async <Response>(
   });
 
   const payload: Response = await res.json();
+
   const data = {
     status: res.status,
     payload,

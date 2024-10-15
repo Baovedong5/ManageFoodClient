@@ -1,23 +1,39 @@
 "use client";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useLogoutMutation } from "@/queries/useAuth";
+import { handleErrorApi } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const account = {
-  name: "Nguyen Van A",
+  name: "Nguyễn Văn A",
   avatar: "https://i.pravatar.cc/150",
 };
 
-const DropdownAvatar = () => {
+export default function DropdownAvatar() {
+  const logoutMutation = useLogoutMutation();
+  const router = useRouter();
+  const logout = async () => {
+    if (logoutMutation.isPending) return;
+    try {
+      await logoutMutation.mutateAsync();
+      router.push("/");
+    } catch (error: any) {
+      handleErrorApi({
+        error,
+      });
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -42,12 +58,12 @@ const DropdownAvatar = () => {
             Cài đặt
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">Hỗ trợ</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Đăng xuất</DropdownMenuItem>
+        <DropdownMenuItem onClick={logout} className="cursor-pointer">
+          Đăng xuất
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
-
-export default DropdownAvatar;
+}
