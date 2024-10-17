@@ -25,12 +25,23 @@ export const handleErrorApi = ({
   duration?: number;
 }) => {
   if (error instanceof EntityError && setError) {
-    error.payload.message.forEach((item) => {
-      setError(item, {
-        type: "server",
-        message: item,
+    const message = error.payload.message;
+    const field = error.payload.field;
+    console.log(message);
+
+    if (Array.isArray(message)) {
+      message.forEach((item) => {
+        setError(item, {
+          type: "server",
+          message: item,
+        });
       });
-    });
+    } else {
+      setError(field, {
+        type: "server",
+        message: message,
+      });
+    }
   } else {
     toast({
       title: "Lỗi",

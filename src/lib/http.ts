@@ -9,9 +9,10 @@ const BADREQUEST_ERROR_STATUS = 400;
 const AUTHENTICATION_ERROR_STATUS = 401;
 
 type BadErrorPayload = {
-  message: string[];
+  message: string[] | string;
   error: string;
   statusCode: number;
+  field: string;
 };
 
 export class HttpError extends Error {
@@ -60,7 +61,7 @@ let clientLogoutRequest: null | Promise<any> = null;
 const isClient = typeof window !== "undefined";
 
 const request = async <Response>(
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   url: string,
   options?: CustomOptions | undefined
 ) => {
@@ -192,6 +193,13 @@ const http = {
     options?: Omit<CustomOptions, "body"> | undefined
   ) {
     return request<Response>("PUT", url, { ...options, body });
+  },
+  patch<Response>(
+    url: string,
+    body: any,
+    options?: Omit<CustomOptions, "body"> | undefined
+  ) {
+    return request<Response>("PATCH", url, { ...options, body });
   },
   delete<Response>(
     url: string,
