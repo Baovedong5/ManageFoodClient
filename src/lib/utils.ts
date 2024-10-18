@@ -3,6 +3,8 @@ import { UseFormSetError } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 import { EntityError } from "@/lib/http";
 import { toast } from "@/hooks/use-toast";
+import jwt from "jsonwebtoken";
+import authRequest from "@/app/apiRequests/auth";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,3 +60,47 @@ export const getAccessTokenFromLocalStorage = () =>
 
 export const getRefreshTokenFromLocalStorage = () =>
   isBrowser ? localStorage.getItem("refresh_token") : null;
+
+export const setAccessTokenToLocalStorage = (value: string) =>
+  isBrowser && localStorage.setItem("access_token", value);
+
+export const setRefreshTokenToLocalStorage = (value: string) =>
+  isBrowser && localStorage.setItem("refresh_token", value);
+
+export const checkAndRefreshToken = async (param?: {
+  onError?: () => void;
+  onSuccess?: () => void;
+}) => {
+  const access_token = getAccessTokenFromLocalStorage();
+  const refresh_token = getRefreshTokenFromLocalStorage();
+  //Chưa đăng nhập thì không cho chạy
+  if (!access_token || !refresh_token) return;
+  const decodedAccessToken = jwt.decode(access_token) as {
+    exp: number;
+    iat: number;
+  };
+  const decodedRefreshToken = jwt.decode(refresh_token) as {
+    exp: number;
+    iat: number;
+  };
+
+  //Thời điểm hết hạn của token tính theo s
+  const now = Math.round(new Date().getTime() / 1000);
+  //Trường hợp fresh token hết hạn thì không sử lý
+  if (decodedRefreshToken.exp <= now) return;
+
+  if (
+    decodedAccessToken.exp - now <
+    (decodedAccessToken.exp - decodedAccessToken.iat) / 3
+  ) {
+    //Goi api refresh token
+    try {
+      const res = await authRequest.refreshToken();
+      setAccessTokenToLocalStorage(res.payload.data.access_token);
+      setRefreshTokenToLocalStorage(res.payload.data.refresh_token);
+      param?.onSuccess && param?.onSuccess();
+    } catch (error) {
+      param?.onError && param?.onError();
+    }
+  }
+};

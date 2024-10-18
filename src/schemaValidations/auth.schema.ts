@@ -53,3 +53,28 @@ export const UpdateMeBody = z
   .strict();
 
 export type UpdateMeBodyType = z.TypeOf<typeof UpdateMeBody>;
+
+export const RefreshTokenBody = z
+  .object({
+    refresh_token: z.string(),
+  })
+  .strict();
+
+export type RefreshTokenBodyType = z.TypeOf<typeof RefreshTokenBody>;
+
+export const RefreshTokenRes = z.object({
+  data: z.object({
+    access_token: z.string(),
+    refresh_token: z.string(),
+    user: z.object({
+      id: z.number(),
+      name: z.string(),
+      email: z.string(),
+      role: z.string(),
+    }),
+  }),
+  message: z.string(),
+  statusCode: z.number(),
+});
+
+export type RefreshTokenResType = z.TypeOf<typeof RefreshTokenRes>;

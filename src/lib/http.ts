@@ -148,10 +148,12 @@ const request = async <Response>(
           }
         }
       } else {
+        //Trường hợp access token vẫn còn hạn
+
         const accessToken = (options?.headers as any)?.Authorization.split(
           "Bearer "
         )[1];
-        redirect(`/logout?accessToken=${accessToken}`);
+        redirect(`/logout?access_token=${accessToken}`);
       }
     } else {
       throw new HttpError(data);
