@@ -15,10 +15,12 @@ import { handleErrorApi } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useAccountProfile } from "@/queries/useAccount";
 import envConfig from "@/config";
+import { useAppContext } from "@/components/app-provider";
 
 export default function DropdownAvatar() {
   const logoutMutation = useLogoutMutation();
   const { data } = useAccountProfile();
+  const { setIsAuth } = useAppContext();
 
   const account = data?.payload.data;
 
@@ -28,6 +30,7 @@ export default function DropdownAvatar() {
     if (logoutMutation.isPending) return;
     try {
       await logoutMutation.mutateAsync();
+      setIsAuth(false);
       router.push("/");
     } catch (error: any) {
       handleErrorApi({

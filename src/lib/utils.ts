@@ -67,6 +67,11 @@ export const setAccessTokenToLocalStorage = (value: string) =>
 export const setRefreshTokenToLocalStorage = (value: string) =>
   isBrowser && localStorage.setItem("refresh_token", value);
 
+export const removeTokenFromLocalStorage = () => {
+  isBrowser && localStorage.removeItem("access_token");
+  isBrowser && localStorage.removeItem("refresh_token");
+};
+
 export const checkAndRefreshToken = async (param?: {
   onError?: () => void;
   onSuccess?: () => void;
@@ -85,9 +90,13 @@ export const checkAndRefreshToken = async (param?: {
   };
 
   //Thời điểm hết hạn của token tính theo s
-  const now = Math.round(new Date().getTime() / 1000);
+  const now = new Date().getTime() / 1000 - 1;
+
   //Trường hợp fresh token hết hạn thì không sử lý
-  if (decodedRefreshToken.exp <= now) return;
+  if (decodedRefreshToken.exp <= now) {
+    removeTokenFromLocalStorage();
+    return param?.onError && param?.onError();
+  }
 
   if (
     decodedAccessToken.exp - now <

@@ -13,7 +13,9 @@ export function middleware(request: NextRequest) {
     privatePaths.some((path) => pathname.startsWith(path)) &&
     !refresh_token
   ) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const url = new URL("/login", request.url);
+    url.searchParams.set("clearTokens", "true");
+    return NextResponse.redirect(url);
   }
 
   //Đăng nhập rồi, nhưng access token hết hạn

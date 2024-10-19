@@ -32,6 +32,8 @@ export async function POST(request: Request) {
       expires: decodedRefreshToken.exp * 1000,
     });
 
+    console.log(cookieStore);
+
     return Response.json(payload);
   } catch (error) {
     console.log(error);

@@ -31,11 +31,16 @@ import { useLoginMutation } from "@/queries/useAuth";
 
 //hook
 import { toast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useAppContext } from "@/components/app-provider";
 
 const LoginForm = () => {
   const loginMutation = useLoginMutation();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const clearTokens = searchParams.get("clearTokens");
+  const { setIsAuth } = useAppContext();
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -53,6 +58,7 @@ const LoginForm = () => {
       toast({
         description: result.payload.message,
       });
+      setIsAuth(true);
       router.push("/manage/dashboard");
     } catch (error: any) {
       toast({
@@ -61,6 +67,12 @@ const LoginForm = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (clearTokens) {
+      setIsAuth(false);
+    }
+  }, [clearTokens, setIsAuth]);
 
   return (
     <div className="flex items-center justify-center h-[550px] ">

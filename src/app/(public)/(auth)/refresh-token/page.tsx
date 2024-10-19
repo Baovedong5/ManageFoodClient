@@ -24,10 +24,12 @@ const RefreshTokenPage = () => {
           router.push(redirectPathName || "/");
         },
       });
+    } else {
+      router.push("/");
     }
   }, [router, refreshTokenFromUrl, redirectPathName]);
 
-  return <div>Refresh token pag...e</div>;
+  return <div>Refresh token pag...</div>;
 };
 
 export default RefreshTokenPage;
