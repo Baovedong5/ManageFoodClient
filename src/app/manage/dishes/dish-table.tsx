@@ -44,12 +44,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { formatCurrency, getVietnameseDishStatus } from "@/lib/utils";
+import {
+  formatCurrency,
+  getVietnameseDishStatus,
+  handleErrorApi,
+} from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import AutoPagination from "@/components/auto-pagination";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import EditDish from "@/app/manage/dishes/edit-dish";
 import AddDish from "@/app/manage/dishes/add-dish";
+import { useDeleteDishMutation, useDishListQuery } from "@/queries/useDish";
+import envConfig from "@/config";
+import { toast } from "@/hooks/use-toast";
 
 type DishItem = DishListResType["data"][0];
 
@@ -67,8 +74,11 @@ const DishTableContext = createContext<{
 
 export const columns: ColumnDef<DishItem>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
+    id: "stt",
+    header: "STT",
+    cell: ({ row }) => {
+      return <>{row.index + 1}</>;
+    },
   },
   {
     accessorKey: "image",
@@ -76,7 +86,11 @@ export const columns: ColumnDef<DishItem>[] = [
     cell: ({ row }) => (
       <div>
         <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
-          <AvatarImage src={row.getValue("image")} />
+          <AvatarImage
+            src={`${envConfig.NEXT_PUBLIC_URL_IMAGE}/images/dish/${row.getValue(
+              "image"
+            )}`}
+          />
           <AvatarFallback className="rounded-none">
             {row.original.name}
           </AvatarFallback>
@@ -152,6 +166,24 @@ function AlertDialogDeleteDish({
   dishDelete: DishItem | null;
   setDishDelete: (value: DishItem | null) => void;
 }) {
+  const { mutateAsync } = useDeleteDishMutation();
+
+  const deleteDish = async () => {
+    if (dishDelete) {
+      try {
+        const result = await mutateAsync(dishDelete.id);
+        setDishDelete(null);
+        toast({
+          title: result.payload.message,
+        });
+      } catch (error) {
+        handleErrorApi({
+          error,
+        });
+      }
+    }
+  };
+
   return (
     <AlertDialog
       open={Boolean(dishDelete)}
@@ -173,8 +205,8 @@ function AlertDialogDeleteDish({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogCancel>Hủy</AlertDialogCancel>
+          <AlertDialogAction onClick={deleteDish}>Xác nhận</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -190,7 +222,10 @@ const DishTable = () => {
   const pageIndex = page - 1;
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>();
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null);
-  const data: any[] = [];
+
+  const dishListQuery = useDishListQuery();
+  const data = dishListQuery.data?.payload.data ?? [];
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

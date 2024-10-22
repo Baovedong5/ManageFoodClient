@@ -1,6 +1,5 @@
 import http from "@/lib/http";
 import { uploadMediaResType } from "@/schemaValidations/media.schema";
-import { headers } from "next/headers";
 
 export const mediaApiRequest = {
   upload: (formData: FormData, type: string) =>
