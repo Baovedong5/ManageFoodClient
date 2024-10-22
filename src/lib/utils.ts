@@ -5,6 +5,7 @@ import { EntityError } from "@/lib/http";
 import { toast } from "@/hooks/use-toast";
 import jwt from "jsonwebtoken";
 import authRequest from "@/app/apiRequests/auth";
+import { DishStatus, OrderStatus, TableStatus } from "@/constants/type";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -112,4 +113,54 @@ export const checkAndRefreshToken = async (param?: {
       param?.onError && param?.onError();
     }
   }
+};
+
+export const getVietnameseDishStatus = (
+  status: (typeof DishStatus)[keyof typeof DishStatus]
+) => {
+  switch (status) {
+    case DishStatus.Available:
+      return "Có sẵn";
+    case DishStatus.Unavailable:
+      return "Không có sẵn";
+    default:
+      return "Ẩn";
+  }
+};
+
+export const getVietnameseTableStatus = (
+  status: (typeof TableStatus)[keyof typeof TableStatus]
+) => {
+  switch (status) {
+    case TableStatus.Available:
+      return "Có sẵn";
+    case TableStatus.Reserved:
+      return "Đã đặt";
+    default:
+      return "Ẩn";
+  }
+};
+
+export const getVietnameseOrderStatus = (
+  status: (typeof OrderStatus)[keyof typeof OrderStatus]
+) => {
+  switch (status) {
+    case OrderStatus.Delivered:
+      return "Đã giao";
+    case OrderStatus.Paid:
+      return "Đã thanh toán";
+    case OrderStatus.Pending:
+      return "Chờ xác nhận";
+    case OrderStatus.Processing:
+      return "Đang xử lý";
+    default:
+      return "Từ chối";
+  }
+};
+
+export const formatCurrency = (number: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(number);
 };
