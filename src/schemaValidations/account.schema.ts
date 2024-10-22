@@ -25,7 +25,9 @@ export const AccountRes = z.object({
 
 export type AccountResType = z.TypeOf<typeof AccountRes>;
 
-export const AccountListRes = z.array(AccountSchema);
+export const AccountListRes = z.object({
+  data: z.array(AccountSchema),
+});
 
 export type AccountListResType = z.TypeOf<typeof AccountListRes>;
 
@@ -33,7 +35,7 @@ export const CreateEmployeeAccountBody = z
   .object({
     name: z.string().trim().min(2).max(256),
     email: z.string().email(),
-    avatar: z.string().url().optional(),
+    avatar: z.string().optional(),
     password: z.string().min(6).max(100),
     confirmPassword: z.string().min(6).max(100),
   })
@@ -42,7 +44,7 @@ export const CreateEmployeeAccountBody = z
     if (confirmPassword !== password) {
       ctx.addIssue({
         code: "custom",
-        message: "Mật khẩu không khớp",
+        message: "Passwords do not match",
         path: ["confirmPassword"],
       });
     }
@@ -56,7 +58,7 @@ export const UpdateEmployeeAccountBody = z
   .object({
     name: z.string().trim().min(2).max(256),
     email: z.string().email(),
-    avatar: z.string().url().optional(),
+    avatar: z.string().optional(),
     changePassword: z.boolean().optional(),
     password: z.string().min(6).max(100).optional(),
     confirmPassword: z.string().min(6).max(100).optional(),
@@ -68,13 +70,13 @@ export const UpdateEmployeeAccountBody = z
       if (!password || !confirmPassword) {
         ctx.addIssue({
           code: "custom",
-          message: "Hãy nhập mật khẩu mới và xác nhận mật khẩu mới",
+          message: "Please enter a new password and confirm the new password",
           path: ["changePassword"],
         });
       } else if (confirmPassword !== password) {
         ctx.addIssue({
           code: "custom",
-          message: "Mật khẩu không khớp",
+          message: "Passwords do not match",
           path: ["confirmPassword"],
         });
       }

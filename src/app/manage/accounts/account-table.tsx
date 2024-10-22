@@ -53,8 +53,15 @@ import { useSearchParams } from "next/navigation";
 import EditEmployee from "@/app/manage/accounts/edit-employee";
 import AddEmployee from "@/app/manage/accounts/add-employee";
 import AutoPagination from "@/components/auto-pagination";
+import envConfig from "@/config";
+import {
+  useDeleteAccountMutation,
+  useGetAccountList,
+} from "@/queries/useAccount";
+import { toast } from "@/hooks/use-toast";
+import { handleErrorApi } from "@/lib/utils";
 
-type AccountItem = AccountListResType[0];
+type AccountItem = AccountListResType["data"][0];
 
 const AccountTableContext = createContext<{
   setEmployeeIdEdit: (value: number) => void;
@@ -70,8 +77,11 @@ const AccountTableContext = createContext<{
 
 export const columns: ColumnDef<AccountType>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
+    id: "stt",
+    header: "STT",
+    cell: ({ row }) => {
+      return <>{row.index + 1}</>;
+    },
   },
   {
     accessorKey: "avatar",
@@ -79,7 +89,11 @@ export const columns: ColumnDef<AccountType>[] = [
     cell: ({ row }) => (
       <div>
         <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
-          <AvatarImage src={row.getValue("avatar")} />
+          <AvatarImage
+            src={`${
+              envConfig.NEXT_PUBLIC_URL_IMAGE
+            }/images/avatar/${row.getValue("avatar")}`}
+          />
           <AvatarFallback className="rounded-none">
             {row.original.name}
           </AvatarFallback>
@@ -149,6 +163,22 @@ function AlertDialogDeleteAccount({
   employeeDelete: AccountItem | null;
   setEmployeeDelete: (value: AccountItem | null) => void;
 }) {
+  const { mutateAsync } = useDeleteAccountMutation();
+  const deleteAccount = async () => {
+    if (employeeDelete) {
+      try {
+        const result = await mutateAsync(employeeDelete.id);
+        setEmployeeDelete(null);
+        toast({
+          title: result.payload.message,
+        });
+      } catch (error) {
+        handleErrorApi({
+          error,
+        });
+      }
+    }
+  };
   return (
     <AlertDialog
       open={Boolean(employeeDelete)}
@@ -162,7 +192,7 @@ function AlertDialogDeleteAccount({
         <AlertDialogHeader>
           <AlertDialogTitle>Xóa nhân viên?</AlertDialogTitle>
           <AlertDialogDescription>
-            Tài khoản{" "}
+            Tài khoản của{" "}
             <span className="bg-foreground text-primary-foreground rounded px-1">
               {employeeDelete?.name}
             </span>{" "}
@@ -170,8 +200,10 @@ function AlertDialogDeleteAccount({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogCancel>Hủy</AlertDialogCancel>
+          <AlertDialogAction onClick={deleteAccount}>
+            Xác nhận
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -179,6 +211,7 @@ function AlertDialogDeleteAccount({
 }
 // Số lượng item trên 1 trang
 const PAGE_SIZE = 10;
+
 const AccountTable = () => {
   const searchParam = useSearchParams();
   const page = searchParam.get("page") ? Number(searchParam.get("page")) : 1;
@@ -188,7 +221,10 @@ const AccountTable = () => {
   const [employeeDelete, setEmployeeDelete] = useState<AccountItem | null>(
     null
   );
-  const data: any[] = [];
+
+  const accountListQuery = useGetAccountList();
+  const data = accountListQuery.data?.payload.data ?? [];
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

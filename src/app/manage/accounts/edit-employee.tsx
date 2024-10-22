@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,11 +17,16 @@ import {
 } from "@/schemaValidations/account.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
+import envConfig from "@/config";
+import { useGetAccount, useUpdateAccountMutation } from "@/queries/useAccount";
+import { useUploadMediaMutation } from "@/queries/useMedia";
+import { toast } from "@/hooks/use-toast";
+import { handleErrorApi } from "@/lib/utils";
 
 const EditEmployee = ({
   id,
@@ -33,6 +39,14 @@ const EditEmployee = ({
 }) => {
   const [file, setFile] = useState<File | null>(null);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
+
+  const { data } = useGetAccount({
+    id: id as number,
+    enabled: Boolean(id),
+  });
+  const updateEmployeeMutation = useUpdateAccountMutation();
+  const uploadMediaMutation = useUploadMediaMutation();
+
   const form = useForm<UpdateEmployeeAccountBodyType>({
     resolver: zodResolver(UpdateEmployeeAccountBody),
     defaultValues: {
@@ -44,22 +58,84 @@ const EditEmployee = ({
       changePassword: false,
     },
   });
+
   const avatar = form.watch("avatar");
   const name = form.watch("name");
   const changePassword = form.watch("changePassword");
+
   const previewAvatarFromFile = useMemo(() => {
     if (file) {
       return URL.createObjectURL(file);
     }
-    return avatar;
+
+    return avatar
+      ? `${envConfig.NEXT_PUBLIC_URL_IMAGE}/images/avatar/${avatar}`
+      : undefined;
   }, [file, avatar]);
+
+  useEffect(() => {
+    if (data) {
+      const { name, avatar, email } = data.payload.data;
+      form.reset({
+        name,
+        avatar: avatar ?? undefined,
+        email,
+        changePassword: form.getValues("changePassword"),
+        password: form.getValues("password"),
+        confirmPassword: form.getValues("confirmPassword"),
+      });
+    }
+  }, [data, form]);
+
+  const onSubmit = async (values: UpdateEmployeeAccountBodyType) => {
+    if (updateEmployeeMutation.isPending) return;
+    try {
+      let body: UpdateEmployeeAccountBodyType & { id: number } = {
+        id: id as number,
+        ...values,
+      };
+
+      if (file) {
+        const formData = new FormData();
+        formData.append("image", file);
+        const uploadImageResult = await uploadMediaMutation.mutateAsync({
+          formData,
+          type: "avatar",
+        });
+        const imageUrl = uploadImageResult.payload.data.fileName;
+
+        body = {
+          ...body,
+          avatar: imageUrl,
+        };
+      }
+
+      const result = await updateEmployeeMutation.mutateAsync(body);
+      toast({
+        description: result.payload.message,
+      });
+      reset();
+      onSubmitSuccess && onSubmitSuccess();
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
+    }
+  };
+
+  const reset = () => {
+    form.reset();
+    setId(undefined);
+    setFile(null);
+  };
 
   return (
     <Dialog
       open={Boolean(id)}
       onOpenChange={(value) => {
         if (!value) {
-          setId(undefined);
+          reset();
         }
       }}
     >
@@ -75,6 +151,9 @@ const EditEmployee = ({
             noValidate
             className="grid auto-rows-max items-start gap-4 md:gap-8"
             id="edit-employee-form"
+            onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              console.log(errors);
+            })}
           >
             <div className="grid gap-4 py-4">
               <FormField
@@ -97,9 +176,6 @@ const EditEmployee = ({
                           const file = e.target.files?.[0];
                           if (file) {
                             setFile(file);
-                            field.onChange(
-                              "http://localhost:3000/" + file.name
-                            );
                           }
                         }}
                         className="hidden"

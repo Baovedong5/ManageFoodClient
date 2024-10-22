@@ -1,5 +1,10 @@
 import http from "@/lib/http";
-import { AccountResType } from "@/schemaValidations/account.schema";
+import {
+  AccountListResType,
+  AccountResType,
+  CreateEmployeeAccountBodyType,
+  UpdateEmployeeAccountBodyType,
+} from "@/schemaValidations/account.schema";
 import {
   ChangePasswordBodyType,
   UpdateMeBodyType,
@@ -11,6 +16,14 @@ const accountApiRequest = {
     http.patch<AccountResType>("/auth/me", body),
   changePassword: (body: ChangePasswordBodyType) =>
     http.patch<AccountResType>("/auth/change-password", body),
+  list: () => http.get<AccountListResType>("/accounts"),
+  addEmployee: (body: CreateEmployeeAccountBodyType) =>
+    http.post<AccountResType>(`/accounts`, body),
+  updateEmployee: (id: number, body: UpdateEmployeeAccountBodyType) =>
+    http.patch<AccountResType>(`/accounts/${id}`, body),
+  getEmployee: (id: number) => http.get<AccountResType>(`/accounts/${id}`),
+  deleteEmployee: (id: number) =>
+    http.delete<AccountResType>(`/accounts/${id}`),
 };
 
 export default accountApiRequest;

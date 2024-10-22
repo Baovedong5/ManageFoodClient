@@ -21,11 +21,18 @@ import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import envConfig from "@/config";
+import { useAddAccountMutation } from "@/queries/useAccount";
+import { useUploadMediaMutation } from "@/queries/useMedia";
+import { toast } from "@/hooks/use-toast";
+import { handleErrorApi } from "@/lib/utils";
 
 const AddEmployee = () => {
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
+  const addAccountMutation = useAddAccountMutation();
+  const uploadMediaMutation = useUploadMediaMutation();
   const form = useForm<CreateEmployeeAccountBodyType>({
     resolver: zodResolver(CreateEmployeeAccountBody),
     defaultValues: {
@@ -42,8 +49,48 @@ const AddEmployee = () => {
     if (file) {
       return URL.createObjectURL(file);
     }
-    return avatar;
+
+    return avatar
+      ? `${envConfig.NEXT_PUBLIC_URL_IMAGE}/images/avatar/${avatar}`
+      : undefined;
   }, [file, avatar]);
+
+  const reset = () => {
+    form.reset();
+    setFile(null);
+  };
+
+  const onSubmit = async (values: CreateEmployeeAccountBodyType) => {
+    if (addAccountMutation.isPending) return;
+    try {
+      let body = values;
+
+      if (file) {
+        const formData = new FormData();
+        formData.append("image", file);
+        const uploadImageResult = await uploadMediaMutation.mutateAsync({
+          formData,
+          type: "avatar",
+        });
+        const imageUrl = uploadImageResult.payload.data.fileName;
+        body = {
+          ...values,
+          avatar: imageUrl,
+        };
+      }
+      const result = await addAccountMutation.mutateAsync(body);
+      toast({
+        description: result.payload.message,
+      });
+      reset();
+      setOpen(false);
+    } catch (error) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
+    }
+  };
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
@@ -67,6 +114,8 @@ const AddEmployee = () => {
             noValidate
             className="grid auto-rows-max items-start gap-4 md:gap-8"
             id="add-employee-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            onReset={reset}
           >
             <div className="grid gap-4 py-4">
               <FormField
@@ -89,9 +138,6 @@ const AddEmployee = () => {
                           const file = e.target.files?.[0];
                           if (file) {
                             setFile(file);
-                            field.onChange(
-                              "http://localhost:3000/" + file.name
-                            );
                           }
                         }}
                         className="hidden"
