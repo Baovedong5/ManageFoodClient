@@ -1,18 +1,20 @@
 "use client";
 
+import { useAppContext } from "@/components/app-provider";
 import {
   getAccessTokenFromLocalStorage,
   getRefreshTokenFromLocalStorage,
 } from "@/lib/utils";
 import { useLogoutMutation } from "@/queries/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 
-const LogoutPage = () => {
+function Logout() {
   const { mutateAsync } = useLogoutMutation();
   const searchParams = useSearchParams();
   const refreshTokenFromUrl = searchParams.get("refresh_token");
   const accessTokenFromUrl = searchParams.get("access_token");
+  const { setIsAuth } = useAppContext();
   const router = useRouter();
 
   const ref = useRef<any>(null);
@@ -36,11 +38,20 @@ const LogoutPage = () => {
       setTimeout(() => {
         ref.current = null;
       }, 1000);
+      setIsAuth(false);
       router.push("/login");
     });
-  }, [router, mutateAsync, refreshTokenFromUrl, accessTokenFromUrl]);
+  }, [router, mutateAsync, refreshTokenFromUrl, accessTokenFromUrl, setIsAuth]);
 
   return <div>Logout page</div>;
+}
+
+const LogoutPage = () => {
+  return (
+    <Suspense>
+      <Logout/>
+    </Suspense>
+  )
 };
 
 export default LogoutPage;

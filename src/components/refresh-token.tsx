@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 //Không check refresh token
-const UNAUTHENTICATED_PATH = ["/login", "/refresh-token"];
+const UNAUTHENTICATED_PATH = ["/login", "/logout", "/refresh-token"];
 
 const RefreshToken = () => {
   const pathName = usePathname();
