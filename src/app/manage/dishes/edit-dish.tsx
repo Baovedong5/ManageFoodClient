@@ -41,6 +41,7 @@ import envConfig from "@/config";
 import { useUploadMediaMutation } from "@/queries/useMedia";
 import { useGetDishQuery, useUpdateDishMutation } from "@/queries/useDish";
 import { toast } from "@/hooks/use-toast";
+import revalidateApi from "@/app/apiRequests/revalidate";
 
 const EditDish = ({
   id,
@@ -124,6 +125,7 @@ const EditDish = ({
       }
 
       const result = await updateDishMutation.mutateAsync(body);
+      await revalidateApi("dishes");
       toast({
         description: result.payload.message,
       });

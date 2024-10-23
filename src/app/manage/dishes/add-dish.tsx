@@ -41,6 +41,7 @@ import { useAddDishMutation } from "@/queries/useDish";
 import { useUploadMediaMutation } from "@/queries/useMedia";
 import envConfig from "@/config";
 import { toast } from "@/hooks/use-toast";
+import revalidateApi from "@/app/apiRequests/revalidate";
 
 const AddDish = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -102,6 +103,7 @@ const AddDish = () => {
       }
 
       const result = await addDishMutation.mutateAsync(body);
+      await revalidateApi("dishes");
       toast({
         description: result.payload.message,
       });
