@@ -34,13 +34,14 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/components/app-provider";
+import { RoleType } from "@/constants/type";
 
 const LoginForm = () => {
   const loginMutation = useLoginMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const clearTokens = searchParams.get("clearTokens");
-  const { setIsAuth } = useAppContext();
+  const { setRole } = useAppContext();
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -58,7 +59,7 @@ const LoginForm = () => {
       toast({
         description: result.payload.message,
       });
-      setIsAuth(true);
+      setRole(result.payload.data.user.role as RoleType);
       router.push("/manage/dashboard");
     } catch (error: any) {
       toast({
@@ -70,9 +71,9 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (clearTokens) {
-      setIsAuth(false);
+      setRole();
     }
-  }, [clearTokens, setIsAuth]);
+  }, [clearTokens, setRole]);
 
   return (
     <div className="flex items-center justify-center h-[550px] ">

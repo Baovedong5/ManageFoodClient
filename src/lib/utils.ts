@@ -5,7 +5,12 @@ import { EntityError } from "@/lib/http";
 import { toast } from "@/hooks/use-toast";
 import jwt from "jsonwebtoken";
 import authRequest from "@/app/apiRequests/auth";
-import { DishStatus, OrderStatus, TableStatus } from "@/constants/type";
+import {
+  DishStatus,
+  OrderStatus,
+  RoleType,
+  TableStatus,
+} from "@/constants/type";
 import envConfig from "@/config";
 
 export function cn(...inputs: ClassValue[]) {
@@ -176,4 +181,10 @@ export const getTableLink = ({
   return (
     envConfig.NEXT_PUBLIC_URL + "/tables/" + tableNumber + "?token=" + token
   );
+};
+
+export const decodeToken = (token: string) => {
+  return jwt.decode(token) as {
+    role: RoleType;
+  };
 };

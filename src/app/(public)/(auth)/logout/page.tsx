@@ -14,7 +14,7 @@ function Logout() {
   const searchParams = useSearchParams();
   const refreshTokenFromUrl = searchParams.get("refresh_token");
   const accessTokenFromUrl = searchParams.get("access_token");
-  const { setIsAuth } = useAppContext();
+  const { setRole } = useAppContext();
   const router = useRouter();
 
   const ref = useRef<any>(null);
@@ -38,10 +38,10 @@ function Logout() {
       setTimeout(() => {
         ref.current = null;
       }, 1000);
-      setIsAuth(false);
+      setRole();
       router.push("/login");
     });
-  }, [router, mutateAsync, refreshTokenFromUrl, accessTokenFromUrl, setIsAuth]);
+  }, [router, mutateAsync, refreshTokenFromUrl, accessTokenFromUrl, setRole]);
 
   return <div>Logout page</div>;
 }
@@ -49,9 +49,9 @@ function Logout() {
 const LogoutPage = () => {
   return (
     <Suspense>
-      <Logout/>
+      <Logout />
     </Suspense>
-  )
+  );
 };
 
 export default LogoutPage;
