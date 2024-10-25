@@ -8,10 +8,12 @@ import authRequest from "@/app/apiRequests/auth";
 import {
   DishStatus,
   OrderStatus,
+  Role,
   RoleType,
   TableStatus,
 } from "@/constants/type";
 import envConfig from "@/config";
+import guestApi from "@/app/apiRequests/guest";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -90,10 +92,12 @@ export const checkAndRefreshToken = async (param?: {
   const decodedAccessToken = jwt.decode(access_token) as {
     exp: number;
     iat: number;
+    role: RoleType;
   };
   const decodedRefreshToken = jwt.decode(refresh_token) as {
     exp: number;
     iat: number;
+    role: RoleType;
   };
 
   //Thời điểm hết hạn của token tính theo s
@@ -111,7 +115,11 @@ export const checkAndRefreshToken = async (param?: {
   ) {
     //Goi api refresh token
     try {
-      const res = await authRequest.refreshToken();
+      const role = decodedRefreshToken.role;
+      const res =
+        role === Role.Guest
+          ? await guestApi.refreshToken()
+          : await authRequest.refreshToken();
       setAccessTokenToLocalStorage(res.payload.data.access_token);
       setRefreshTokenToLocalStorage(res.payload.data.refresh_token);
       param?.onSuccess && param?.onSuccess();

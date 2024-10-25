@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { decodeToken } from "./lib/utils";
+import { Role } from "./constants/type";
+import path from "path";
 
-const privatePaths = ["/manage"];
+const managePaths = ["/manage"];
+const guestePaths = ["/guest"];
+const privatePaths = [...managePaths, ...guestePaths];
 const unAuthPaths = ["/login"];
 
 export function middleware(request: NextRequest) {
@@ -18,26 +23,42 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  //Đăng nhập rồi, nhưng access token hết hạn
-  if (
-    privatePaths.some((path) => pathname.startsWith(path)) &&
-    !access_token &&
-    refresh_token
-  ) {
-    const url = new URL("/refresh-token", request.url);
-    url.searchParams.set("refresh_token", refresh_token ?? "");
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
-  }
+  // Trường hợp đã đăng nhập
+  if (refresh_token) {
+    //Nếu cố tình vào trang login
+    if (unAuthPaths.some((path) => pathname.startsWith(path))) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
 
-  //Đăng nhập rồi thì không cho vào login nữa
-  if (unAuthPaths.some((path) => pathname.startsWith(path)) && refresh_token) {
-    return NextResponse.redirect(new URL("/", request.url));
+    //nhưng access token hết hạn
+    if (
+      privatePaths.some((path) => pathname.startsWith(path)) &&
+      !access_token
+    ) {
+      const url = new URL("/refresh-token", request.url);
+      url.searchParams.set("refreshToken", refresh_token);
+      url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
+    }
+
+    //Vào không đúng role redirect về trang chủ
+    const role = decodeToken(refresh_token).role;
+    //Guest nhưng cố vào router owner
+    const isGuestGoToManagePath =
+      role === Role.Guest &&
+      managePaths.some((path) => pathname.startsWith(path));
+    //Không phải guest nhưng cố vào router guest
+    const isNotGuestGoToGuestPath =
+      role !== Role.Guest &&
+      guestePaths.some((path) => pathname.startsWith(path));
+    if (isGuestGoToManagePath || isNotGuestGoToGuestPath) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/manage/:path*", "/login"],
+  matcher: ["/manage/:path*", "/guest/:path*", "/login"],
 };
