@@ -86,3 +86,19 @@ export const UpdateEmployeeAccountBody = z
 export type UpdateEmployeeAccountBodyType = z.TypeOf<
   typeof UpdateEmployeeAccountBody
 >;
+
+export const GetListGuestsRes = z.object({
+  data: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      tableNumber: z.number().nullable(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    })
+  ),
+  message: z.string(),
+  statusCode: z.number(),
+});
+
+export type GetListGuestsResType = z.TypeOf<typeof GetListGuestsRes>;

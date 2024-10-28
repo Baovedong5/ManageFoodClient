@@ -69,6 +69,14 @@ export const GetOrdersRes = z.object({
 
 export type GetOrdersResType = z.TypeOf<typeof GetOrdersRes>;
 
+export const GetOrdersDetailRes = z.object({
+  message: z.string(),
+  data: OrderSchema,
+  statusCode: z.number(),
+});
+
+export type GetOrdersDetailResType = z.TypeOf<typeof GetOrdersDetailRes>;
+
 export const GetOrderDetailRes = z.object({
   message: z.string(),
   data: OrderSchema.extend({
@@ -78,3 +86,35 @@ export const GetOrderDetailRes = z.object({
 });
 
 export type GetOrderDetailResType = z.TypeOf<typeof GetOrderDetailRes>;
+
+export const CreateOrdersBody = z
+  .object({
+    guestId: z.number(),
+    orders: z.array(
+      z.object({
+        dishId: z.number(),
+        quantity: z.number(),
+      })
+    ),
+  })
+  .strict();
+
+export type CreateOrdersBodyType = z.TypeOf<typeof CreateOrdersBody>;
+
+export const CreateOrdersRes = z.object({
+  message: z.string(),
+  data: z.array(OrderSchema),
+  statusCode: z.number(),
+});
+
+export type CreateOrdersResType = z.TypeOf<typeof CreateOrdersRes>;
+
+export const PayGuestOrdersBody = z.object({
+  guestId: z.number(),
+});
+
+export type PayGuestOrdersBodyType = z.TypeOf<typeof PayGuestOrdersBody>;
+
+export const PayGuestOrdersRes = GetOrdersRes;
+
+export type PayGuestOrdersResType = z.TypeOf<typeof PayGuestOrdersRes>;
