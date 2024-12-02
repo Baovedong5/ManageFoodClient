@@ -8,8 +8,13 @@ import {
   formatDateTimeToLocaleString,
   formatDateTimeToTimeString,
   getVietnameseOrderStatus,
+  handleErrorApi,
 } from "@/lib/utils";
-import { GetOrdersResType } from "@/schemaValidations/order.schema";
+import { usePayForGuestMutation } from "@/queries/useOrder";
+import {
+  GetOrdersResType,
+  PayGuestOrdersResType,
+} from "@/schemaValidations/order.schema";
 import Image from "next/image";
 import { Fragment } from "react";
 
@@ -19,9 +24,11 @@ type Orders = GetOrdersResType["data"];
 const OrderGuestDetail = ({
   guest,
   orders,
+  onPaySuccess,
 }: {
   guest: Guest;
   orders: Orders;
+  onPaySuccess?: (data: PayGuestOrdersResType) => void;
 }) => {
   const ordersFilterToPurchase = guest
     ? orders.filter(
@@ -33,6 +40,23 @@ const OrderGuestDetail = ({
   const purchasedOrderFilter = guest
     ? orders.filter((order) => order.status === OrderStatus.Paid)
     : [];
+
+  const payForGuestMitation = usePayForGuestMutation();
+
+  const pay = async () => {
+    if (payForGuestMitation.isPending || !guest) return;
+    try {
+      const result = await payForGuestMitation.mutateAsync({
+        guestId: guest.id,
+      });
+      onPaySuccess && onPaySuccess(result.payload);
+    } catch (error) {
+      handleErrorApi({
+        error,
+      });
+    }
+  };
+
   return (
     <div className="space-y-2 text-sm">
       {guest && (
@@ -149,6 +173,7 @@ const OrderGuestDetail = ({
           size={"sm"}
           variant={"secondary"}
           disabled={ordersFilterToPurchase.length === 0}
+          onClick={pay}
         >
           Thanh toán tất cả ({ordersFilterToPurchase.length} đơn)
         </Button>

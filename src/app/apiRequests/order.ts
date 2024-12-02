@@ -1,14 +1,20 @@
 import http from "@/lib/http";
 import {
+  CreateOrdersBodyType,
+  CreateOrdersResType,
   GetOrdersDetailResType,
   GetOrdersQueryParamsType,
   GetOrdersResType,
+  PayGuestOrdersBodyType,
+  PayGuestOrdersResType,
   UpdateOrderBodyType,
   UpdateOrderResType,
 } from "@/schemaValidations/order.schema";
 import queryString from "query-string";
 
 const orderApi = {
+  createOrders: (body: CreateOrdersBodyType) =>
+    http.post<CreateOrdersResType>("/orders", body),
   getOrderList: (queryParams: GetOrdersQueryParamsType) =>
     http.get<GetOrdersResType>(
       "/orders?" +
@@ -22,6 +28,9 @@ const orderApi = {
 
   getOrderDetail: (orderId: number) =>
     http.get<GetOrdersDetailResType>(`/orders/${orderId}`),
+
+  pay: (body: PayGuestOrdersBodyType) =>
+    http.post<PayGuestOrdersResType>(`/orders/pay`, body),
 };
 
 export default orderApi;

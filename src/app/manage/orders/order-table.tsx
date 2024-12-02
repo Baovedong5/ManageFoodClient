@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import {
   GetOrdersResType,
+  PayGuestOrdersResType,
   UpdateOrderResType,
 } from "@/schemaValidations/order.schema";
 import AddOrder from "@/app/manage/orders/add-order";
@@ -206,9 +207,23 @@ const OrderTable = () => {
 
     function onNewOrder(data: GuestCreateOrdersResType["data"]) {
       const { guest } = data[0];
+
       toast({
         description: `${guest?.name} tại bàn ${guest?.tableNumber} vừa đặt ${data.length} đơn`,
       });
+
+      refetch();
+    }
+
+    function onPayment(data: PayGuestOrdersResType["data"]) {
+      console.log(">>> datat payment", data);
+
+      const { guest } = data[0];
+
+      toast({
+        description: `${guest?.name} tại bàn ${guest?.tableNumber} thanh toán thành công ${data.length} đơn`,
+      });
+
       refetch();
     }
 
@@ -216,14 +231,16 @@ const OrderTable = () => {
     socket.on("new-order", onNewOrder);
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
+    socket.on("payment", onPayment);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("update-order", onUpdateOrder);
       socket.off("new-order", onNewOrder);
+      socket.off("payment", onPayment);
     };
-  }, [refetchOrderList, fromDate, toDate, socket]);
+  }, [refetchOrderList, fromDate, toDate]);
 
   return (
     <OrderTableContext.Provider

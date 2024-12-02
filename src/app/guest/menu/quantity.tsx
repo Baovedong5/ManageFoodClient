@@ -27,13 +27,17 @@ const Quantity = ({
         onChange={(e) => {
           let value = e.target.value;
           const numberValue = Number(value);
-          if (isNaN(numberValue)) {
+          if (isNaN(numberValue) && numberValue <= 5) {
             return;
           }
           onChange(numberValue);
         }}
       />
-      <Button className="h-6 w-6 p-0" onClick={() => onChange(value + 1)}>
+      <Button
+        className="h-6 w-6 p-0"
+        onClick={() => onChange(value + 1)}
+        disabled={value === 5}
+      >
         <Plus className="w-3 h-3" />
       </Button>
     </div>

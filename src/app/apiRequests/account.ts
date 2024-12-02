@@ -3,12 +3,17 @@ import {
   AccountListResType,
   AccountResType,
   CreateEmployeeAccountBodyType,
+  CreateGuestBodyType,
+  CreateGuestResType,
+  GetGuestListQueryParamsType,
+  GetListGuestsResType,
   UpdateEmployeeAccountBodyType,
 } from "@/schemaValidations/account.schema";
 import {
   ChangePasswordBodyType,
   UpdateMeBodyType,
 } from "@/schemaValidations/auth.schema";
+import queryString from "query-string";
 
 const accountApiRequest = {
   me: () => http.get<AccountResType>("/auth/me"),
@@ -24,6 +29,16 @@ const accountApiRequest = {
   getEmployee: (id: number) => http.get<AccountResType>(`/accounts/${id}`),
   deleteEmployee: (id: number) =>
     http.delete<AccountResType>(`/accounts/${id}`),
+  guestList: (queryParams: GetGuestListQueryParamsType) =>
+    http.get<GetListGuestsResType>(
+      `/accounts/guests?` +
+        queryString.stringify({
+          fromDate: queryParams.fromDate?.toISOString(),
+          toDate: queryParams.toDate?.toISOString(),
+        })
+    ),
+  createGuest: (body: CreateGuestBodyType) =>
+    http.post<CreateGuestResType>(`/accounts/guests`, body),
 };
 
 export default accountApiRequest;

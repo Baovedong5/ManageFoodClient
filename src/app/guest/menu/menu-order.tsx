@@ -34,9 +34,8 @@ const MenuOrder = () => {
   const handleQuantityChange = (dishId: number, quantity: number) => {
     setOrders((prevOrders) => {
       if (quantity === 0) {
-        return prevOrders.filter((order) => order.dishId === dishId);
+        return prevOrders.filter((order) => order.dishId !== dishId);
       }
-
       const index = prevOrders.findIndex((order) => order.dishId === dishId);
       if (index === -1) {
         return [...prevOrders, { dishId, quantity }];

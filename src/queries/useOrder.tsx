@@ -1,6 +1,7 @@
 import orderApi from "@/app/apiRequests/order";
 import {
   GetOrdersQueryParamsType,
+  PayGuestOrdersBodyType,
   UpdateOrderBodyType,
 } from "@/schemaValidations/order.schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -33,5 +34,17 @@ export const useGetOrderDetailQuery = ({
     queryKey: ["orders", id],
     queryFn: () => orderApi.getOrderDetail(id),
     enabled,
+  });
+};
+
+export const usePayForGuestMutation = () => {
+  return useMutation({
+    mutationFn: (body: PayGuestOrdersBodyType) => orderApi.pay(body),
+  });
+};
+
+export const useCreateOrderMutation = () => {
+  return useMutation({
+    mutationFn: orderApi.createOrders,
   });
 };
