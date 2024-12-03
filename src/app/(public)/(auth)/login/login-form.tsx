@@ -24,7 +24,7 @@ import Link from "next/link";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 
 //icon
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, LoaderCircle } from "lucide-react";
 
 //query
 import { useLoginMutation } from "@/queries/useAuth";
@@ -135,6 +135,9 @@ const LoginForm = () => {
                   )}
                 />
                 <Button type="submit" className="w-full">
+                  {loginMutation.isPending && (
+                    <LoaderCircle className="w-5 h-5 mr-2 animate-spin" />
+                  )}
                   Đăng nhập
                 </Button>
               </div>

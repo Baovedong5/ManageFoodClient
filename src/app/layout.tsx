@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import AppProvider from "@/components/app-provider";
+import NextTopLoader from "nextjs-toploader";
+import Footer from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "Big Boy Restaurant",
@@ -18,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background font-sans antialiased")}>
+        <NextTopLoader showSpinner={false} color="hsl(var(--foreground))" />
         <AppProvider>
           <ThemeProvider
             attribute="class"
@@ -26,6 +29,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Footer />
             <Toaster />
           </ThemeProvider>
         </AppProvider>
