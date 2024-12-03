@@ -2,6 +2,7 @@ import Image from "next/image";
 import dishApi from "../apiRequests/dish";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import { formatCurrency } from "@/lib/utils";
+import Link from "next/link";
 
 const Home = async () => {
   let dishList: DishListResType["data"] = [];
@@ -40,7 +41,11 @@ const Home = async () => {
         <h2 className="text-center text-2xl font-bold">Đa dạng các món ăn</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
           {dishList.map((dish) => (
-            <div className="flex gap-4 w" key={dish.id}>
+            <Link
+              href={`/dishes/${dish.id}`}
+              className="flex gap-4 w"
+              key={dish.id}
+            >
               <div className="flex-shrink-0">
                 <Image
                   src={`http://localhost:8080/images/dish/${dish.image}`}
@@ -56,7 +61,7 @@ const Home = async () => {
                 <p className="">{dish.description}</p>
                 <p className="font-semibold">{formatCurrency(dish.price)}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
