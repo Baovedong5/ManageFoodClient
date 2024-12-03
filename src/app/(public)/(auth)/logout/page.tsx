@@ -14,7 +14,7 @@ function Logout() {
   const searchParams = useSearchParams();
   const refreshTokenFromUrl = searchParams.get("refresh_token");
   const accessTokenFromUrl = searchParams.get("access_token");
-  const { setRole } = useAppContext();
+  const { setRole, disconnectSocket } = useAppContext();
   const router = useRouter();
 
   const ref = useRef<any>(null);
@@ -39,9 +39,17 @@ function Logout() {
         ref.current = null;
       }, 1000);
       setRole();
+      disconnectSocket();
       router.push("/login");
     });
-  }, [router, mutateAsync, refreshTokenFromUrl, accessTokenFromUrl, setRole]);
+  }, [
+    router,
+    mutateAsync,
+    refreshTokenFromUrl,
+    accessTokenFromUrl,
+    setRole,
+    disconnectSocket,
+  ]);
 
   return <div>Logout page</div>;
 }

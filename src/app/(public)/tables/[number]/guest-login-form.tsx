@@ -15,13 +15,13 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useGuestLoginMutation } from "@/queries/useGuest";
 import { useAppContext } from "@/components/app-provider";
-import { handleErrorApi } from "@/lib/utils";
+import { generateSocketInstance, handleErrorApi } from "@/lib/utils";
 
 const GuestLoginForm = () => {
   const searchParams = useSearchParams();
   const params = useParams();
   const router = useRouter();
-  const { setRole } = useAppContext();
+  const { setRole, setSocket } = useAppContext();
 
   const loginMutation = useGuestLoginMutation();
 
@@ -50,6 +50,7 @@ const GuestLoginForm = () => {
     try {
       const result = await loginMutation.mutateAsync(values);
       setRole(result.payload.data.guest.role);
+      setSocket(generateSocketInstance(result.payload.data.access_token));
       router.push("/guest/menu");
     } catch (error) {
       handleErrorApi({

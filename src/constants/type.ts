@@ -6,6 +6,8 @@ export const Role = {
 
 export type RoleType = (typeof Role)[keyof typeof Role];
 
+export const RoleValues = [Role.Owner, Role.Employee, Role.Guest] as const;
+
 export const DishStatus = {
   Available: "Available",
   Unavailable: "Unavailable",

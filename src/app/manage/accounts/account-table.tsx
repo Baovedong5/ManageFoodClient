@@ -284,7 +284,7 @@ const AccountTable = () => {
         />
         <div className="flex items-center py-4">
           <Input
-            placeholder="Filter emails..."
+            placeholder="Lọc theo email"
             value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("email")?.setFilterValue(event.target.value)

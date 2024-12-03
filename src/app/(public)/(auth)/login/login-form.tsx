@@ -34,14 +34,15 @@ import { toast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useAppContext } from "@/components/app-provider";
-import { RoleType } from "@/constants/type";
+import { Role, RoleType } from "@/constants/type";
+import { generateSocketInstance } from "@/lib/utils";
 
 const LoginForm = () => {
   const loginMutation = useLoginMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const clearTokens = searchParams.get("clearTokens");
-  const { setRole } = useAppContext();
+  const { role, setRole, setSocket } = useAppContext();
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -60,7 +61,12 @@ const LoginForm = () => {
         description: result.payload.message,
       });
       setRole(result.payload.data.user.role as RoleType);
-      router.push("/manage/dashboard");
+      if (role === Role.Owner) {
+        router.push("/manage/dashboard");
+      } else {
+        router.push("/manage/orders");
+      }
+      setSocket(generateSocketInstance(result.payload.data.access_token));
     } catch (error: any) {
       toast({
         description: "Tài khoản hoặc mật khẩu không đúng",
@@ -130,9 +136,6 @@ const LoginForm = () => {
                 />
                 <Button type="submit" className="w-full">
                   Đăng nhập
-                </Button>
-                <Button variant="outline" className="w-full" type="button">
-                  Đăng nhập bằng Google
                 </Button>
               </div>
             </form>

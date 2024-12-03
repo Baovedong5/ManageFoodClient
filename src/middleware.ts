@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { decodeToken } from "./lib/utils";
-import { Role } from "./constants/type";
-import path from "path";
+import { Role, RoleType } from "./constants/type";
+import jwt from "jsonwebtoken";
 
 const managePaths = ["/manage"];
 const guestePaths = ["/guest"];
+const onlyOwnerPaths = ["/manage/accounts"];
 const privatePaths = [...managePaths, ...guestePaths];
 const unAuthPaths = ["/login"];
+
+const decodeToken = (token: string) => {
+  return jwt.decode(token) as {
+    role: RoleType;
+  };
+};
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -51,7 +57,17 @@ export function middleware(request: NextRequest) {
     const isNotGuestGoToGuestPath =
       role !== Role.Guest &&
       guestePaths.some((path) => pathname.startsWith(path));
-    if (isGuestGoToManagePath || isNotGuestGoToGuestPath) {
+
+    // Không phải owner nhưng cố tình truy cập vào các router dành cho owner
+    const isNotOwnerGoToOwnerPath =
+      role !== Role.Owner &&
+      onlyOwnerPaths.some((path) => pathname.startsWith(path));
+
+    if (
+      isGuestGoToManagePath ||
+      isNotGuestGoToGuestPath ||
+      isNotOwnerGoToOwnerPath
+    ) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }

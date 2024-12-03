@@ -16,6 +16,7 @@ import envConfig from "@/config";
 import guestApi from "@/app/apiRequests/guest";
 import { format } from "date-fns";
 import { BookX, CookingPot, HandCoins, Loader, Truck } from "lucide-react";
+import { io } from "socket.io-client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -86,6 +87,7 @@ export const removeTokenFromLocalStorage = () => {
 export const checkAndRefreshToken = async (param?: {
   onError?: () => void;
   onSuccess?: () => void;
+  force?: boolean;
 }) => {
   const access_token = getAccessTokenFromLocalStorage();
   const refresh_token = getRefreshTokenFromLocalStorage();
@@ -103,7 +105,7 @@ export const checkAndRefreshToken = async (param?: {
   };
 
   //Thời điểm hết hạn của token tính theo s
-  const now = new Date().getTime() / 1000 - 1;
+  const now = Math.round(new Date().getTime() / 1000);
 
   //Trường hợp fresh token hết hạn thì không sử lý
   if (decodedRefreshToken.exp <= now) {
@@ -112,8 +114,9 @@ export const checkAndRefreshToken = async (param?: {
   }
 
   if (
+    param?.force ||
     decodedAccessToken.exp - now <
-    (decodedAccessToken.exp - decodedAccessToken.iat) / 3
+      (decodedAccessToken.exp - decodedAccessToken.iat) / 3
   ) {
     //Goi api refresh token
     try {
@@ -230,4 +233,12 @@ export const OrderStatusIcon = {
   [OrderStatus.Rejected]: BookX,
   [OrderStatus.Delivered]: Truck,
   [OrderStatus.Paid]: HandCoins,
+};
+
+export const generateSocketInstance = (access_token: string) => {
+  return io(envConfig.NEXT_PUBLIC_URL_IMAGE, {
+    auth: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
 };
