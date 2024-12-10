@@ -23,7 +23,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getVietnameseDishStatus, handleErrorApi } from "@/lib/utils";
+import {
+  getVietnameseDishCategory,
+  getVietnameseDishStatus,
+  handleErrorApi,
+} from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -35,7 +39,11 @@ import {
   UpdateDishBody,
   UpdateDishBodyType,
 } from "@/schemaValidations/dish.schema";
-import { DishStatus, DishStatusValues } from "@/constants/type";
+import {
+  DishCategoryValues,
+  DishStatus,
+  DishStatusValues,
+} from "@/constants/type";
 import { Textarea } from "@/components/ui/textarea";
 import envConfig from "@/config";
 import { useUploadMediaMutation } from "@/queries/useMedia";
@@ -66,6 +74,7 @@ const EditDish = ({
     resolver: zodResolver(UpdateDishBody),
     defaultValues: {
       name: "",
+      category: "",
       description: "",
       price: 0,
       image: undefined,
@@ -88,9 +97,11 @@ const EditDish = ({
 
   useEffect(() => {
     if (data) {
-      const { name, image, description, price, status } = data.payload.data;
+      const { name, image, description, price, status, category } =
+        data.payload.data;
       form.reset({
         name,
+        category,
         image: image ?? undefined,
         description,
         price,
@@ -244,6 +255,40 @@ const EditDish = ({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid grid-cols-4 items-center justify-items-start gap-4">
+                      <Label htmlFor="description">Loại</Label>
+                      <div className="col-span-3 w-full space-y-2">
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn loại món ăn" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {DishCategoryValues.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {getVietnameseDishCategory(category)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="description"

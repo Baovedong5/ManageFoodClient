@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import jwt from "jsonwebtoken";
 import authRequest from "@/app/apiRequests/auth";
 import {
+  DishCategory,
   DishStatus,
   OrderStatus,
   Role,
@@ -142,6 +143,25 @@ export const getVietnameseDishStatus = (
       return "Có sẵn";
     case DishStatus.Unavailable:
       return "Không có sẵn";
+    default:
+      return "Ẩn";
+  }
+};
+
+export const getVietnameseDishCategory = (
+  category: (typeof DishCategory)[keyof typeof DishCategory]
+) => {
+  switch (category) {
+    case DishCategory.Drink:
+      return "Đồ uống";
+    case DishCategory.Food:
+      return "Đồ ăn";
+    case DishCategory.Dessert:
+      return "Tráng miệng";
+    case DishCategory.Vegetarian:
+      return "Đồ chay";
+    case DishCategory.Snacks:
+      return "Đồ ăn nhanh";
     default:
       return "Ẩn";
   }

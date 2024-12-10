@@ -66,6 +66,8 @@ const EditEmployee = ({
     defaultValues: {
       name: "",
       email: "",
+      address: "",
+      phoneNumber: "",
       avatar: undefined,
       password: undefined,
       confirmPassword: undefined,
@@ -90,9 +92,12 @@ const EditEmployee = ({
 
   useEffect(() => {
     if (data) {
-      const { name, avatar, email, role } = data.payload.data;
+      const { name, avatar, email, address, phoneNumber, role } =
+        data.payload.data;
       form.reset({
         name,
+        address,
+        phoneNumber,
         avatar: avatar ?? undefined,
         email,
         changePassword: form.getValues("changePassword"),
@@ -224,6 +229,7 @@ const EditEmployee = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -239,6 +245,39 @@ const EditEmployee = ({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid grid-cols-4 items-center justify-items-start gap-4">
+                      <Label htmlFor="address">Địa chỉ</Label>
+                      <div className="col-span-3 w-full space-y-2">
+                        <Input id="address" className="w-full" {...field} />
+                        <FormMessage />
+                      </div>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid grid-cols-4 items-center justify-items-start gap-4">
+                      <Label htmlFor="phoneNumber">Số điện thoại</Label>
+                      <div className="col-span-3 w-full space-y-2">
+                        <Input id="phoneNumber" className="w-full" {...field} />
+                        <FormMessage />
+                      </div>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="role"

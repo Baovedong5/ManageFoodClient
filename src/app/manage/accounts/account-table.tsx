@@ -122,6 +122,20 @@ export const columns: ColumnDef<AccountType>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
+    accessorKey: "address",
+    header: "Địa chỉ",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("address")}</div>
+    ),
+  },
+  {
+    accessorKey: "phoneNumber",
+    header: "Số điện thoại",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("phoneNumber")}</div>
+    ),
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: function Actions({ row }) {
@@ -284,10 +298,10 @@ const AccountTable = () => {
         />
         <div className="flex items-center py-4">
           <Input
-            placeholder="Lọc theo email"
-            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+            placeholder="Lọc theo tên"
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("email")?.setFilterValue(event.target.value)
+              table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />

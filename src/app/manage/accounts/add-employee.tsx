@@ -38,13 +38,17 @@ const AddEmployee = () => {
     defaultValues: {
       name: "",
       email: "",
+      address: "",
+      phoneNumber: "",
       avatar: undefined,
       password: "",
       confirmPassword: "",
     },
   });
+
   const avatar = form.watch("avatar");
   const name = form.watch("name");
+
   const previewAvatarFromFile = useMemo(() => {
     if (file) {
       return URL.createObjectURL(file);
@@ -106,7 +110,7 @@ const AddEmployee = () => {
         <DialogHeader>
           <DialogTitle>Tạo tài khoản</DialogTitle>
           <DialogDescription>
-            Các trường tên, email, mật khẩu là bắt buộc
+            Các trường tên, email, mật khẩu, địa chỉ, số điện thoại là bắt buộc
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -170,6 +174,7 @@ const AddEmployee = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -185,6 +190,39 @@ const AddEmployee = () => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid grid-cols-4 items-center justify-items-start gap-4">
+                      <Label htmlFor="address">Địa chỉ</Label>
+                      <div className="col-span-3 w-full space-y-2">
+                        <Input id="address" className="w-full" {...field} />
+                        <FormMessage />
+                      </div>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid grid-cols-4 items-center justify-items-start gap-4">
+                      <Label htmlFor="phoneNumber">Số điện thoại</Label>
+                      <div className="col-span-3 w-full space-y-2">
+                        <Input id="phoneNumber" className="w-full" {...field} />
+                        <FormMessage />
+                      </div>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="password"

@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   formatCurrency,
+  getVietnameseDishCategory,
   getVietnameseDishStatus,
   handleErrorApi,
 } from "@/lib/utils";
@@ -108,6 +109,15 @@ export const columns: ColumnDef<DishItem>[] = [
     header: "Giá cả",
     cell: ({ row }) => (
       <div className="capitalize">{formatCurrency(row.getValue("price"))}</div>
+    ),
+  },
+  {
+    accessorKey: "category",
+    header: "Loại",
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {getVietnameseDishCategory(row.getValue("category"))}
+      </div>
     ),
   },
   {

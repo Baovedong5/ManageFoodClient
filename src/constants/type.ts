@@ -20,6 +20,22 @@ export const DishStatusValues = [
   DishStatus.Hidden,
 ] as const;
 
+export const DishCategory = {
+  Drink: "Drink",
+  Food: "Food",
+  Vegetarian: "Vegetarian",
+  Dessert: "Dessert",
+  Snacks: "Snacks",
+} as const;
+
+export const DishCategoryValues = [
+  DishCategory.Food,
+  DishCategory.Dessert,
+  DishCategory.Drink,
+  DishCategory.Vegetarian,
+  DishCategory.Snacks,
+] as const;
+
 export const TableStatus = {
   Available: "Available",
   Hidden: "Hidden",

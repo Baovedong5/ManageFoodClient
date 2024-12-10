@@ -32,6 +32,8 @@ const UpdateProfileForm = () => {
     resolver: zodResolver(UpdateMeBody),
     defaultValues: {
       name: "",
+      address: "",
+      phoneNumber: "",
       avatar: undefined,
     },
   });
@@ -41,9 +43,11 @@ const UpdateProfileForm = () => {
 
   useEffect(() => {
     if (data) {
-      const { name, avatar } = data.payload.data;
+      const { name, avatar, address, phoneNumber } = data.payload.data;
       form.reset({
         name,
+        address,
+        phoneNumber,
         avatar: avatar ?? undefined,
       });
     }
@@ -157,6 +161,44 @@ const UpdateProfileForm = () => {
                       <Label htmlFor="name">Tên</Label>
                       <Input
                         id="name"
+                        type="text"
+                        className="w-full"
+                        {...field}
+                      />
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid gap-3">
+                      <Label htmlFor="address">Địa chỉ</Label>
+                      <Input
+                        id="address"
+                        type="text"
+                        className="w-full"
+                        {...field}
+                      />
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid gap-3">
+                      <Label htmlFor="phoneNumber">Số điện thoại</Label>
+                      <Input
+                        id="phoneNumber"
                         type="text"
                         className="w-full"
                         {...field}

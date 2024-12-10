@@ -49,6 +49,8 @@ export const UpdateMeBody = z
   .object({
     name: z.string().min(2).max(100),
     avatar: z.string().optional(),
+    address: z.string().optional(),
+    phoneNumber: z.string().optional(),
   })
   .strict();
 

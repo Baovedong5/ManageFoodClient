@@ -11,8 +11,19 @@ import { GuestCreateOrdersBodyType } from "@/schemaValidations/guest.schema";
 import { useGuestOrderMutation } from "@/queries/useGuest";
 import { useRouter } from "next/navigation";
 import { DishStatus } from "@/constants/type";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const MenuOrder = () => {
+  const [open, setOpen] = useState(false);
   const { data } = useDishListQuery();
   const dishes = data?.payload.data ?? [];
 
@@ -55,6 +66,11 @@ const MenuOrder = () => {
         error,
       });
     }
+  };
+
+  const handleConfirmOrder = () => {
+    handleOrder();
+    setOpen(false);
   };
 
   return (
@@ -104,13 +120,33 @@ const MenuOrder = () => {
       <div className="sticky bottom-0">
         <Button
           className="w-full justify-between"
-          onClick={handleOrder}
+          onClick={() => setOpen(true)}
           disabled={orders.length === 0}
         >
           <span>Đặt hàng · {orders.length} món</span>
           <span>{formatCurrency(totalPrice)}</span>
         </Button>
       </div>
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận đặt hàng</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn đặt {orders.length} món với tổng giá{" "}
+              {formatCurrency(totalPrice)}?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpen(false)}>
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmOrder}>
+              Xác nhận
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

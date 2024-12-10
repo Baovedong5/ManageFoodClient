@@ -5,6 +5,8 @@ export const AccountSchema = z.object({
   id: z.number(),
   name: z.string(),
   email: z.string(),
+  address: z.string(),
+  phoneNumber: z.string(),
   role: z.enum([Role.Owner, Role.Employee]),
   avater: z.string().nullable(),
 });
@@ -18,6 +20,8 @@ export const AccountRes = z.object({
     id: z.number(),
     name: z.string(),
     email: z.string(),
+    address: z.string(),
+    phoneNumber: z.string(),
     role: z.string(),
     avatar: z.string().nullable(),
   }),
@@ -36,6 +40,8 @@ export const CreateEmployeeAccountBody = z
     name: z.string().trim().min(2).max(256),
     email: z.string().email(),
     avatar: z.string().optional(),
+    address: z.string(),
+    phoneNumber: z.string(),
     password: z.string().min(6).max(100),
     confirmPassword: z.string().min(6).max(100),
   })
@@ -44,7 +50,7 @@ export const CreateEmployeeAccountBody = z
     if (confirmPassword !== password) {
       ctx.addIssue({
         code: "custom",
-        message: "Passwords do not match",
+        message: "Mật khẩu không khớp",
         path: ["confirmPassword"],
       });
     }
@@ -59,6 +65,8 @@ export const UpdateEmployeeAccountBody = z
     name: z.string().trim().min(2).max(256),
     email: z.string().email(),
     avatar: z.string().optional(),
+    address: z.string().optional(),
+    phoneNumber: z.string().optional(),
     changePassword: z.boolean().optional(),
     password: z.string().min(6).max(100).optional(),
     confirmPassword: z.string().min(6).max(100).optional(),

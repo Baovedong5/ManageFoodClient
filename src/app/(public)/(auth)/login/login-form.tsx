@@ -48,7 +48,7 @@ const LoginForm = () => {
     resolver: zodResolver(LoginBody),
     defaultValues: {
       username: "admin@gmail.com",
-      password: "123123",
+      password: "123456",
     },
   });
 

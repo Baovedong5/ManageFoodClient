@@ -23,12 +23,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getVietnameseDishStatus, handleErrorApi } from "@/lib/utils";
+import {
+  getVietnameseDishCategory,
+  getVietnameseDishStatus,
+  handleErrorApi,
+} from "@/lib/utils";
 import {
   CreateDishBody,
   CreateDishBodyType,
 } from "@/schemaValidations/dish.schema";
-import { DishStatus, DishStatusValues } from "@/constants/type";
+import {
+  DishCategoryValues,
+  DishStatus,
+  DishStatusValues,
+} from "@/constants/type";
 import {
   Select,
   SelectContent,
@@ -204,6 +212,7 @@ const AddDish = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="price"
@@ -224,6 +233,40 @@ const AddDish = () => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="grid grid-cols-4 items-center justify-items-start gap-4">
+                      <Label htmlFor="description">Loại</Label>
+                      <div className="col-span-3 w-full space-y-2">
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn loại món ăn" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {DishCategoryValues.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {getVietnameseDishCategory(category)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="description"
@@ -243,6 +286,7 @@ const AddDish = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="status"
@@ -253,7 +297,6 @@ const AddDish = () => {
                       <div className="col-span-3 w-full space-y-2">
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
                           value={field.value}
                         >
                           <FormControl>
