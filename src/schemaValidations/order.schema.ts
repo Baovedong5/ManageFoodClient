@@ -113,6 +113,41 @@ export const PayGuestOrdersBody = z.object({
   guestId: z.number(),
 });
 
+export const PaymentGuestVnPayBody = z.object({
+  guestId: z.number(),
+  paymentRef: z.string(),
+});
+
+export type PaymentGuestVnPayBodyType = z.TypeOf<typeof PaymentGuestVnPayBody>;
+
+export const PaymentGuestVnPayRes = z.object({
+  message: z.string(),
+  data: z.object({
+    orders: z.array(OrderSchema),
+    paymentRef: z.string(),
+  }),
+  statusCode: z.number(),
+});
+
+export const UpdateStatusVnPayBopdy = z.object({
+  paymentRef: z.string(),
+  status: z.string(),
+});
+
+export type UpdateStatusVnPayBopdyType = z.TypeOf<
+  typeof UpdateStatusVnPayBopdy
+>;
+
+export const UpdateStatusVnPayRes = z.object({
+  message: z.string(),
+  data: z.array(OrderSchema),
+  statusCode: z.number(),
+});
+
+export type UpdateStatusVnPayResType = z.TypeOf<typeof UpdateStatusVnPayRes>;
+
+export type PaymentGuestVnPayResType = z.TypeOf<typeof PaymentGuestVnPayRes>;
+
 export type PayGuestOrdersBodyType = z.TypeOf<typeof PayGuestOrdersBody>;
 
 export const PayGuestOrdersRes = GetOrdersRes;

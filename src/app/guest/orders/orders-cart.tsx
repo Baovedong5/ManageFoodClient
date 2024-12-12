@@ -2,21 +2,43 @@
 
 import { useAppContext } from "@/components/app-provider";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import envConfig from "@/config";
 import { OrderStatus } from "@/constants/type";
 import { toast } from "@/hooks/use-toast";
 import { formatCurrency, getVietnameseOrderStatus } from "@/lib/utils";
-import { useGuestGetOrderListQuery } from "@/queries/useGuest";
+import {
+  useGuestGetOrderListQuery,
+  useGuestPaymentVnpayMutation,
+} from "@/queries/useGuest";
+import { useCreateUrlPaymentMutation } from "@/queries/usePayment";
 import {
   PayGuestOrdersResType,
   UpdateOrderResType,
 } from "@/schemaValidations/order.schema";
 import Image from "next/image";
-import { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const OrderCart = () => {
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+
   const { data, refetch } = useGuestGetOrderListQuery();
   const orders = data?.payload.data ?? [];
+
+  const guestPaymentVnPay = useGuestPaymentVnpayMutation();
+
+  const createUrlPayment = useCreateUrlPaymentMutation();
 
   const { socket } = useAppContext();
 
@@ -115,6 +137,29 @@ const OrderCart = () => {
     };
   }, [refetch, socket]);
 
+  const handlePayment = async (method: string) => {
+    const paymentRef = uuidv4();
+    if (method === "Direct") {
+    } else {
+      const res = await guestPaymentVnPay.mutateAsync({
+        guestId: orders[0].guestId as number,
+        paymentRef,
+      });
+
+      if (res.payload.data) {
+        const r = await createUrlPayment.mutateAsync({
+          amount: waitingForPaying.price,
+          locale: "vn",
+          paymentRef,
+        });
+
+        if (r.payload.data) {
+          router.push(r.payload.data.url);
+        }
+      }
+    }
+  };
+
   return (
     <>
       {orders.map((order, index) => (
@@ -144,20 +189,31 @@ const OrderCart = () => {
           </div>
         </div>
       ))}
-      {paid.quantity !== 0 && (
-        <div className="sticky bottom-0">
-          <div className="w-full flex space-x-4 text-xl font-semibold">
-            <span>Đơn đã thanh toán · {paid.quantity} món</span>
-            <span>{formatCurrency(paid.price)}</span>
-          </div>
-        </div>
-      )}
-      <div className="sticky bottom-0">
-        <div className="w-full flex space-x-4 text-xl font-semibold">
-          <span>Đơn chưa thanh toán · {waitingForPaying.quantity} món</span>
-          <span>{formatCurrency(waitingForPaying.price)}</span>
-        </div>
-      </div>
+      <Button className="w-full mt-4" onClick={() => setOpen(true)}>
+        Thanh toán
+      </Button>
+
+      <Drawer open={open} onOpenChange={setOpen} disablePreventScroll={true}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Chọn phương thức thanh toán</DrawerTitle>
+            <DrawerDescription>
+              Vui lòng chọn phương thức thanh toán bạn muốn sử dụng.
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter>
+            <Button onClick={() => handlePayment("Direct")}>
+              Thanh toán tại quầy
+            </Button>
+            <Button onClick={() => handlePayment("Online")}>
+              Thanh toán online
+            </Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Hủy
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

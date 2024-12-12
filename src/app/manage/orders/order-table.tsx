@@ -24,6 +24,7 @@ import {
   GetOrdersResType,
   PayGuestOrdersResType,
   UpdateOrderResType,
+  UpdateStatusVnPayResType,
 } from "@/schemaValidations/order.schema";
 import AddOrder from "@/app/manage/orders/add-order";
 import EditOrder from "@/app/manage/orders/edit-order";
@@ -206,6 +207,16 @@ const OrderTable = () => {
       refetch();
     }
 
+    function onUpdateStatus(data: UpdateStatusVnPayResType["data"]) {
+      const { guest } = data[0];
+
+      toast({
+        description: `${guest?.name} tại bàn ${guest?.tableNumber} vừa thanh toán thành công`,
+      });
+
+      refetch();
+    }
+
     function onNewOrder(data: GuestCreateOrdersResType["data"]) {
       const { guest } = data[0];
 
@@ -233,6 +244,7 @@ const OrderTable = () => {
     socket?.on("connect", onConnect);
     socket?.on("disconnect", onDisconnect);
     socket?.on("payment", onPayment);
+    socket?.on("update-order-payment", onUpdateStatus);
 
     return () => {
       socket?.off("connect", onConnect);
@@ -240,6 +252,7 @@ const OrderTable = () => {
       socket?.off("update-order", onUpdateOrder);
       socket?.off("new-order", onNewOrder);
       socket?.off("payment", onPayment);
+      socket?.off("update-order-payment", onUpdateStatus);
     };
   }, [refetchOrderList, fromDate, toDate, socket]);
 

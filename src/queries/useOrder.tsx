@@ -48,3 +48,9 @@ export const useCreateOrderMutation = () => {
     mutationFn: orderApi.createOrders,
   });
 };
+
+export const useUpdateStatusVnpayMutation = () => {
+  return useMutation({
+    mutationFn: orderApi.updateStatusVnpay,
+  });
+};

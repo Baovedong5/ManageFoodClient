@@ -9,6 +9,8 @@ import {
   PayGuestOrdersResType,
   UpdateOrderBodyType,
   UpdateOrderResType,
+  UpdateStatusVnPayBopdyType,
+  UpdateStatusVnPayResType,
 } from "@/schemaValidations/order.schema";
 import queryString from "query-string";
 
@@ -31,6 +33,8 @@ const orderApi = {
 
   pay: (body: PayGuestOrdersBodyType) =>
     http.post<PayGuestOrdersResType>(`/orders/pay`, body),
+  updateStatusVnpay: (body: UpdateStatusVnPayBopdyType) =>
+    http.post<UpdateStatusVnPayResType>(`/orders/update-payment-status`, body),
 };
 
 export default orderApi;

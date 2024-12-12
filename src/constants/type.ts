@@ -25,7 +25,6 @@ export const DishCategory = {
   Food: "Food",
   Vegetarian: "Vegetarian",
   Dessert: "Dessert",
-  Snacks: "Snacks",
 } as const;
 
 export const DishCategoryValues = [
@@ -33,7 +32,6 @@ export const DishCategoryValues = [
   DishCategory.Dessert,
   DishCategory.Drink,
   DishCategory.Vegetarian,
-  DishCategory.Snacks,
 ] as const;
 
 export const TableStatus = {

@@ -10,6 +10,10 @@ import {
   GuestLoginBodyType,
   GuestLoginResType,
 } from "@/schemaValidations/guest.schema";
+import {
+  PaymentGuestVnPayBodyType,
+  PaymentGuestVnPayResType,
+} from "@/schemaValidations/order.schema";
 
 const guestApi = {
   refreshTokenRequest: null as Promise<{
@@ -55,6 +59,8 @@ const guestApi = {
   order: (body: GuestCreateOrdersBodyType) =>
     http.post<GuestCreateOrdersResType>("/guests/orders", body),
   getOrderList: () => http.get<GuestGetOrdersResType>("/guests/orders"),
+  paymentVnpay: (body: PaymentGuestVnPayBodyType) =>
+    http.post<PaymentGuestVnPayResType>("/guests/payment-vnpay", body),
 };
 
 export default guestApi;
