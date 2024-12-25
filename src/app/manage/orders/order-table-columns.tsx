@@ -151,6 +151,7 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
     header: "Trạng thái",
     cell: function Cell({ row }) {
       const { changeStatus } = useContext(OrderTableContext);
+      const currentStatus = row.getValue("status") as string;
       const changeOrderStatus = async (
         status: (typeof OrderStatusValues)[number]
       ) => {
@@ -161,19 +162,40 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
           quantity: row.original.quantity,
         });
       };
+
+      const filteredStatusValues = OrderStatusValues.filter((status) => {
+        if (currentStatus === OrderStatus.Delivered) {
+          return (
+            status === OrderStatus.Paid || status === OrderStatus.Delivered
+          );
+        }
+        if (
+          currentStatus === OrderStatus.Paid ||
+          currentStatus === OrderStatus.Rejected ||
+          currentStatus === OrderStatus.Processing
+        ) {
+          return status !== OrderStatus.Pending;
+        }
+        return currentStatus !== OrderStatus.Paid;
+      });
+
       return (
         <Select
           onValueChange={(value: (typeof OrderStatusValues)[number]) => {
             changeOrderStatus(value);
           }}
           defaultValue={OrderStatus.Pending}
-          value={row.getValue("status")}
+          value={currentStatus}
+          disabled={
+            currentStatus === OrderStatus.Paid ||
+            currentStatus === OrderStatus.Rejected
+          }
         >
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Theme" />
           </SelectTrigger>
           <SelectContent>
-            {OrderStatusValues.map((status) => (
+            {filteredStatusValues.map((status) => (
               <SelectItem key={status} value={status}>
                 {getVietnameseOrderStatus(status)}
               </SelectItem>
@@ -187,6 +209,11 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
     id: "orderHandlerName",
     header: "Người xử lý",
     cell: ({ row }) => <div>{row.original.orderHandler?.name ?? ""}</div>,
+  },
+  {
+    id: "paymentRef",
+    header: "Mã hóa đơn",
+    cell: ({ row }) => <div>{row.original.paymentRef ?? ""}</div>,
   },
   {
     accessorKey: "createdAt",

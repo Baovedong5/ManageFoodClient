@@ -59,11 +59,6 @@ const AddEmployee = () => {
       : undefined;
   }, [file, avatar]);
 
-  const reset = () => {
-    form.reset();
-    setFile(null);
-  };
-
   const onSubmit = async (values: CreateEmployeeAccountBodyType) => {
     if (addAccountMutation.isPending) return;
     try {
@@ -96,8 +91,21 @@ const AddEmployee = () => {
     }
   };
 
+  const reset = () => {
+    form.reset();
+    setFile(null);
+  };
+
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
+    <Dialog
+      onOpenChange={(value) => {
+        if (!value) {
+          reset();
+        }
+        setOpen(value);
+      }}
+      open={open}
+    >
       <DialogTrigger asChild>
         <Button size="sm" className="h-7 gap-1">
           <PlusCircle className="h-3.5 w-3.5" />

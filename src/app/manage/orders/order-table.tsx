@@ -103,12 +103,12 @@ const OrderTable = () => {
     toDate,
   });
 
+  const refetchOrderList = orderListQuery.refetch;
+
   const tableListQuery = useTableListQuery();
 
   const orderList = orderListQuery.data?.payload.data ?? [];
   const tableList = tableListQuery.data?.payload.data ?? [];
-
-  const refetchOrderList = orderListQuery.refetch;
 
   const updateOrderMutation = useUpdateOrderMutation();
 
@@ -190,6 +190,8 @@ const OrderTable = () => {
     function refetch() {
       const now = new Date();
       if (now >= fromDate && now <= toDate) {
+        console.log("refetch");
+
         refetchOrderList();
       }
     }
@@ -224,12 +226,12 @@ const OrderTable = () => {
         description: `${guest?.name} tại bàn ${guest?.tableNumber} vừa đặt ${data.length} đơn`,
       });
 
+      console.log("new order");
+
       refetch();
     }
 
     function onPayment(data: PayGuestOrdersResType["data"]) {
-      console.log(">>> datat payment", data);
-
       const { guest } = data[0];
 
       toast({
@@ -293,7 +295,7 @@ const OrderTable = () => {
               />
             </div>
             <Button className="" variant={"outline"} onClick={resetDateFilter}>
-              Reset
+              Đặt lại
             </Button>
           </div>
           <div className="ml-auto">

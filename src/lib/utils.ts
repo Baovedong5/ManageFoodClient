@@ -59,7 +59,7 @@ export const handleErrorApi = ({
     }
   } else {
     toast({
-      title: "Lỗi",
+      // title: "Lỗi",
       description: error?.payload?.message ?? "Lỗi không xác định",
       variant: "destructive",
       duration: duration ?? 5000,
@@ -160,8 +160,6 @@ export const getVietnameseDishCategory = (
       return "Tráng miệng";
     case DishCategory.Vegetarian:
       return "Đồ chay";
-    case DishCategory.Snacks:
-      return "Đồ ăn nhanh";
     default:
       return "Ẩn";
   }

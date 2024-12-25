@@ -36,6 +36,7 @@ export const OrderSchema = z.object({
   status: z.enum(OrderStatusValues),
   createdAt: z.date(),
   updatedAt: z.date(),
+  paymentRef: z.string(),
 });
 
 export const UpdateOrderBody = z.object({

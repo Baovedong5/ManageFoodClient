@@ -18,8 +18,8 @@ export const useUpdateOrderMutation = () => {
 
 export const useGetOrderListQuery = (queryParams: GetOrdersQueryParamsType) => {
   return useQuery({
-    queryKey: ["orders", queryParams],
     queryFn: () => orderApi.getOrderList(queryParams),
+    queryKey: ["orders", queryParams],
   });
 };
 

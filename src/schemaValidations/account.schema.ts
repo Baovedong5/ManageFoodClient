@@ -37,13 +37,22 @@ export type AccountListResType = z.TypeOf<typeof AccountListRes>;
 
 export const CreateEmployeeAccountBody = z
   .object({
-    name: z.string().trim().min(2).max(256),
-    email: z.string().email(),
+    name: z.string().trim().min(2, "Tên phải có ít nhất 2 ký tự").max(256),
+    email: z.string().email("Email không hợp lệ"),
     avatar: z.string().optional(),
-    address: z.string(),
-    phoneNumber: z.string(),
-    password: z.string().min(6).max(100),
-    confirmPassword: z.string().min(6).max(100),
+    address: z.string().min(1, "Địa chỉ không được để trống"),
+    phoneNumber: z
+      .string()
+      .min(1, "Số điện thoại không được để trống")
+      .regex(
+        /(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b/,
+        "Số điện thoại không hợp lệ"
+      ),
+    password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự").max(100),
+    confirmPassword: z
+      .string()
+      .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+      .max(100),
   })
   .strict()
   .superRefine(({ confirmPassword, password }, ctx) => {
@@ -62,8 +71,8 @@ export type CreateEmployeeAccountBodyType = z.TypeOf<
 
 export const UpdateEmployeeAccountBody = z
   .object({
-    name: z.string().trim().min(2).max(256),
-    email: z.string().email(),
+    name: z.string().trim().min(2, "Tên phải có ít nhất 2 ký tự").max(256),
+    email: z.string().email("Email không hợp lệ"),
     avatar: z.string().optional(),
     address: z.string().optional(),
     phoneNumber: z.string().optional(),

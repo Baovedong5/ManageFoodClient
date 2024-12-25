@@ -54,8 +54,8 @@ const GuestLoginForm = () => {
       router.push("/guest/menu");
     } catch (error) {
       handleErrorApi({
-        error,
-        setError: form.setError,
+        error
+        // setError: form.setError,
       });
     }
   };

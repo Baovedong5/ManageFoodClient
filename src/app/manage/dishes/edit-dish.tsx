@@ -167,9 +167,6 @@ const EditDish = ({
       <DialogContent className="sm:max-w-[600px] max-h-screen overflow-auto">
         <DialogHeader>
           <DialogTitle>Cập nhật món ăn</DialogTitle>
-          <DialogDescription>
-            Các trường sau đây là bắ buộc: Tên, ảnh
-          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form

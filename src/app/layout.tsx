@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import AppProvider from "@/components/app-provider";
 import NextTopLoader from "nextjs-toploader";
 import Footer from "@/components/footer";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 export const metadata: Metadata = {
   title: "Big Boy Restaurant",
@@ -28,7 +29,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <AntdRegistry>{children}</AntdRegistry>
             <Footer />
             <Toaster />
           </ThemeProvider>

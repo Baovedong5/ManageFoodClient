@@ -96,7 +96,7 @@ const MenuOrder = () => {
   return (
     <div>
       <Tabs value={selectedCategory} onValueChange={handleCategoryChange}>
-        <TabsList>
+        <TabsList className="flex gap-4 py-4 ">
           <TabsTrigger value="All">Tất cả</TabsTrigger>
           {DishCategoryValues.map((category) => (
             <TabsTrigger value={category} key={category}>
@@ -106,7 +106,7 @@ const MenuOrder = () => {
         </TabsList>
 
         <TabsContent value="All">
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4 h-[500px] overflow-y-auto">
             {filteredDishes.map((dish) => (
               <div
                 key={dish.id}
@@ -152,7 +152,7 @@ const MenuOrder = () => {
 
         {DishCategoryValues.map((category) => (
           <TabsContent key={category} value={category}>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 h-[500px] overflow-y-auto">
               {filteredDishes.map((dish) => (
                 <div
                   key={dish.id}

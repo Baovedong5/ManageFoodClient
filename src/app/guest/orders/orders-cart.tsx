@@ -34,7 +34,7 @@ const OrderCart = () => {
   const router = useRouter();
 
   const { data, refetch } = useGuestGetOrderListQuery();
-  const orders = data?.payload.data ?? [];
+  const orders = useMemo(() => data?.payload.data ?? [], [data]);
 
   const guestPaymentVnPay = useGuestPaymentVnpayMutation();
 
@@ -46,9 +46,9 @@ const OrderCart = () => {
     return orders.reduce(
       (result, order) => {
         if (
-          order.status === OrderStatus.Delivered ||
-          order.status === OrderStatus.Processing ||
-          order.status === OrderStatus.Pending
+          order.status === OrderStatus.Delivered
+          // order.status === OrderStatus.Processing ||
+          // order.status === OrderStatus.Pending
         ) {
           return {
             ...result,
@@ -160,6 +160,10 @@ const OrderCart = () => {
     }
   };
 
+  const hasDeliveredOrders = orders.some(
+    (order) => order.status === OrderStatus.Delivered
+  );
+
   return (
     <>
       {orders.map((order, index) => (
@@ -189,7 +193,11 @@ const OrderCart = () => {
           </div>
         </div>
       ))}
-      <Button className="w-full mt-4" onClick={() => setOpen(true)}>
+      <Button
+        className="w-full mt-4"
+        onClick={() => setOpen(true)}
+        disabled={!hasDeliveredOrders}
+      >
         Thanh toán
       </Button>
 
@@ -201,9 +209,16 @@ const OrderCart = () => {
               Vui lòng chọn phương thức thanh toán bạn muốn sử dụng.
             </DrawerDescription>
           </DrawerHeader>
+          <div className="p-4">
+            <p className="text-sm text-gray-600">
+              <strong>Thanh toán sau tại quầy:</strong> Quý khách vui lòng dùng
+              bữa xong và thanh toán tại quầy. Nhân viên sẽ hỗ trợ bạn thực hiện
+              thanh toán.
+            </p>
+          </div>
           <DrawerFooter>
             <Button onClick={() => handlePayment("Direct")}>
-              Thanh toán tại quầy
+              Thanh toán sau tại quầy
             </Button>
             <Button onClick={() => handlePayment("Online")}>
               Thanh toán online

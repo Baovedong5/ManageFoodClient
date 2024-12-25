@@ -2,8 +2,8 @@ import { TableStatusValues } from "@/constants/type";
 import z from "zod";
 
 export const CreateTableBody = z.object({
-  number: z.coerce.number().positive(),
-  capacity: z.coerce.number().positive(),
+  number: z.coerce.number().positive("Số hiệu bàn phải lớn hơn 0"),
+  capacity: z.coerce.number().positive("Lượng khách cho phép phải lớn hơn 0"),
   status: z.enum(TableStatusValues).optional(),
 });
 

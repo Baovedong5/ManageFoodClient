@@ -259,9 +259,8 @@ const AddDish = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </div>
-
-                      <FormMessage />
                     </div>
                   </FormItem>
                 )}
