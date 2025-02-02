@@ -20,7 +20,7 @@ const ResultPage = () => {
       const changeStatus = async () => {
         await changePaymentStatus.mutateAsync({
           status:
-            responseCode === "00" ? OrderStatus.Paid : OrderStatus.Rejected,
+            responseCode === "00" ? OrderStatus.Paid : OrderStatus.Delivered,
           paymentRef,
         });
       };
