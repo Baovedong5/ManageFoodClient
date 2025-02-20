@@ -11,12 +11,12 @@ import { cn } from "@/lib/utils";
 import { Package2, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 
 export default function NavLinks() {
   const pathname = usePathname();
 
-  const { role } = useAppContext();
+  const role = useAppStore((state) => state.role);
 
   return (
     <TooltipProvider>
@@ -27,7 +27,7 @@ export default function NavLinks() {
             className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
           >
             <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
-            <span className="sr-only">Acme Inc</span>
+            <span className="sr-only">Big boy restaurant</span>
           </Link>
 
           {menuItems.map((Item, index) => {

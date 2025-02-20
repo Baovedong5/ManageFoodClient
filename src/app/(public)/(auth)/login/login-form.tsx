@@ -33,7 +33,7 @@ import { useLoginMutation } from "@/queries/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 import { Role, RoleType } from "@/constants/type";
 import { generateSocketInstance } from "@/lib/utils";
 
@@ -42,7 +42,10 @@ const LoginForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const clearTokens = searchParams.get("clearTokens");
-  const { role, setRole, setSocket } = useAppContext();
+
+  const role = useAppStore((state) => state.role);
+  const setRole = useAppStore((state) => state.setRole);
+  const setSocket = useAppStore((state) => state.setSocket);
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),

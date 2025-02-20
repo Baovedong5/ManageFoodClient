@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +40,7 @@ const OrderCart = () => {
 
   const createUrlPayment = useCreateUrlPaymentMutation();
 
-  const { socket } = useAppContext();
+  const socket = useAppStore((state) => state.socket);
 
   const { waitingForPaying, paid } = useMemo(() => {
     return orders.reduce(

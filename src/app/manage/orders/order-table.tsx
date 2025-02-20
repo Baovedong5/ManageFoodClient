@@ -59,7 +59,7 @@ import { useTableListQuery } from "@/queries/useTable";
 import TableSkeleton from "@/app/manage/orders/table-skeleton";
 import { GuestCreateOrdersResType } from "@/schemaValidations/guest.schema";
 import { toast } from "@/hooks/use-toast";
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 
 export const OrderTableContext = createContext({
   setOrderIdEdit: (value: number | undefined) => {},
@@ -89,7 +89,8 @@ const initFromDate = startOfDay(new Date());
 const initToDate = endOfDay(new Date());
 
 const OrderTable = () => {
-  const { socket } = useAppContext();
+  const socket = useAppStore((state) => state.socket);
+
   const searchParam = useSearchParams();
   const [openStatusFilter, setOpenStatusFilter] = useState(false);
   const [fromDate, setFromDate] = useState(initFromDate);

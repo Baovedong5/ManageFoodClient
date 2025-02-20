@@ -16,12 +16,14 @@ import { handleErrorApi } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useAccountProfile } from "@/queries/useAccount";
 import envConfig from "@/config";
-import { useAppContext } from "@/components/app-provider";
+import { useAppStore } from "@/components/app-provider";
 
 export default function DropdownAvatar() {
   const logoutMutation = useLogoutMutation();
   const { data } = useAccountProfile();
-  const { setRole, disconnectSocket } = useAppContext();
+
+  const setRole = useAppStore((state) => state.setRole);
+  const disconnectSocket = useAppStore((state) => state.disconnectSocket);
 
   const account = data?.payload.data;
 
